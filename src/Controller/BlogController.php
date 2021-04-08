@@ -23,6 +23,19 @@ class BlogController extends AbstractController
     }
 
     /**
+     * @Route("/blog/delete", name="delete")
+     */
+    public function deleteBlog(Request $req): Response{
+
+        $id = $req->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $blog= $em->getRepository(BlogContent::class)->find($id);
+        $em->remove($blog);
+        $em->flush();
+        return new Response($id);
+    }
+
+    /**
      * @Route("/blog/submit", name="submitedData")
      */
     public function submitedData(Request $req, EntityManagerInterface $em): Response
