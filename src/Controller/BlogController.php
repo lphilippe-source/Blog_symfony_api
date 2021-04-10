@@ -2,12 +2,17 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\BlogContent;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class BlogController extends AbstractController
 {
@@ -19,7 +24,16 @@ class BlogController extends AbstractController
         $repo = $this->getDoctrine()->getRepository(BlogContent::class);
         $res= $repo->findAll();
 
-        return $this->json($res);
+        $encoder = new JsonEncoder();
+        $defaultContext = [
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+            return $object->getId();
+            }
+        ];
+        $normalizer = new ObjectNormalizer(null, null, null, null, null, null, $defaultContext);
+        $serializer = new Serializer([$normalizer], [$encoder]);
+
+        return new Response($serializer->serialize($res, 'json'));
     }
 
     /**
@@ -43,7 +57,11 @@ class BlogController extends AbstractController
         if($req->getMethod()==='POST'){
             $data = json_decode($req->getContent(), true);
             $blogContent = new BlogContent();
-            $blogContent->setAuthor($data["author"]);
+           
+            $em = $this->getDoctrine()->getManager();
+            $userAccount= $em->getRepository(User::class)->findOneBy(array("firstName"=>$data["author"]));
+            
+            $blogContent->setAuthor($userAccount);
             $blogContent->setBody($data["body"]);
             $blogContent->setTitle($data["title"]);
             $em->persist($blogContent);
