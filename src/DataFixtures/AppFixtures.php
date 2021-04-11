@@ -7,19 +7,25 @@ use App\Entity\User;
 use App\Entity\BlogContent;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
+    private $encoder;
+
+    public function __construct(UserPasswordEncoderInterface $encoder){
+        $this->encoder = $encoder;
+    }
     public function load(ObjectManager $manager)
     {
         $faker = Factory::create('FR-fr');
-        
         $author1 = new User();
-        $author1 ->setEmail($faker->email)
+        $hash = $this->encoder->encodePassword($author1,'password');
+        $author1->setEmail($faker->email)
                 ->setFirstName('mario')
                 ->setLastName($faker->lastName)
                 ->setPicture($faker->imageUrl($width = 640, $height = 480))
-                ->setHash('password')
+                ->setHash($hash)
                 ->setIntroduction($faker->sentence())
                 ->setDescription($faker->text)
                 ->setText($faker->text)
