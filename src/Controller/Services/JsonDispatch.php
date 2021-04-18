@@ -1,5 +1,5 @@
 <?php
-namespace App\Controller\services;
+namespace App\Controller\Services;
 
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
