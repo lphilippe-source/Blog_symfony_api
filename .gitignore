@@ -15,3 +15,12 @@
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/key.pem
+
+JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/cert.pem
+
+JWT_PASSPHRASE= *ICI*
+###< lexik/jwt-authentication-bundle ###

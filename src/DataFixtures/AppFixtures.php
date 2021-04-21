@@ -32,6 +32,7 @@ class AppFixtures extends Fixture
                 ->setSlug($faker->slug);
         $author2 = clone $author1;
         $author2->setFirstName('luigi');
+        $author2->setEmail($faker->email);
         $author = [$author1,$author2];
 
         $manager->persist($author1);
