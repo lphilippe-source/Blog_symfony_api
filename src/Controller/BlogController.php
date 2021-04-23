@@ -16,8 +16,10 @@ class BlogController extends AbstractController
     /**
      * @Route("/blog", name="blog")
      */
-    public function index()
+    public function index(Request $request)
     {
+        
+
         $repo = $this->getDoctrine()->getRepository(BlogContent::class);
         $res= $repo->findAll();
         $json = new JsonDispatch($res);

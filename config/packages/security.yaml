@@ -28,12 +28,26 @@ security:
                 check_path: /blog/login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api3:
+            pattern: ^/blog/user
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+        api2:
+            pattern: ^/blog/delete
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
         api:
             pattern: ^/blog
             stateless: true
             guard:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
+        
 
     encoders:
         # use your user class name here

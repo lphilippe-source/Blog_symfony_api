@@ -14,14 +14,21 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserController extends AbstractController
 {
     /**
      * @Route("/blog/user", name="user")
      */
-    public function index()
+    public function index(Request $request)
     {
+        $myfile = fopen("/home/lphilippe/Documents/tryoutPHP/symfony_apiProject/apiProject/test/truc.html", "w") or dd("Unable to open file!");
+        $txt = $request->getContent();
+        fwrite($myfile, $txt);
+        fclose($myfile);
+        $txt = json_decode($txt,true);
+
         $repo = $this->getDoctrine()->getRepository(User::class);
         $res = $repo->findAll();
         $json = new JsonDispatch($res);
@@ -77,21 +84,22 @@ class UserController extends AbstractController
     /**
      * @Route("/blog/login/signup", name="signup")
      */
-    public function sign_up(Request $request, EntityManagerInterface $em)
+    public function sign_up(Request $request, EntityManagerInterface $em, UserPasswordEncoderInterface $encoder)
     {
         $myfile = fopen("/home/lphilippe/Documents/tryoutPHP/symfony_apiProject/apiProject/test/truc.html", "w") or dd("Unable to open file!");
         $txt = $request->getContent();
         fwrite($myfile, $txt);
-        // $txt = "Jane Doe\n";
-        // fwrite($myfile, $txt);
         fclose($myfile);
         $txt = json_decode($txt,true);
 
         // dd($request->getContent());
+
         $user = new User();
+        $hash = $encoder->encodePassword($user,$txt['password']);
+
         $user->setFirstName($txt['pseudo']);
         $user->setLastName($txt['pseudo']);
-        $user->setHash($txt['password']);
+        $user->setHash($hash);
         $user->setEmail($txt['mail']);
         $user->setIntroduction('default');
         $user->setDescription('default');
